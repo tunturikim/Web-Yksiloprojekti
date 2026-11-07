@@ -316,7 +316,7 @@ dialog::backdrop {
   min-height: 16rem;
   color: var(--text-muted);
   background-color: var(--surface);
-  border: 1px dashed var(--text-muted);
+  border: 1px solid var(--hover);
   border-radius: 0.75rem;
 }
 
