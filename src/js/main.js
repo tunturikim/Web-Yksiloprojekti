@@ -1,138 +1,92 @@
-'use strict';
+// Mock data in the same shape the API will give later
+const restaurants = [
+  {
+    id: '1',
+    name: 'DIAK Kalasatama',
+    address: 'Kyläsaarenkuja 2, Helsinki',
+    phone: '040 123 4567',
+    coordinates: [60.1873, 24.9769],
+    menu: [
+      {name: 'Kasviskeitto (G, L)', price: '4,20 €'},
+      {name: 'Broileripasta', price: '2,95 €'},
+      {name: 'Linssipata (VL)', price: null},
+    ],
+  },
+  {
+    id: '2',
+    name: 'Fiilu',
+    address: 'Piippukatu 11, Helsinki',
+    phone: '040 765 4321',
+    coordinates: [60.1942, 24.9658],
+    menu: [
+      {name: 'Lohikeitto', price: '3,80 €'},
+      {name: 'Kasvispihvi (VL)', price: '2,95 €'},
+    ],
+  },
+  {
+    id: '3',
+    name: 'Hesburger',
+    address: 'Hämeentie 135, Helsinki',
+    phone: '040 555 0000',
+    coordinates: [60.2048, 24.9662],
+    menu: [{name: 'Hampurilaisateria', price: '5,50 €'}],
+  },
+];
 
-const API_URL = 'https://media2.edu.metropolia.fi/restaurant/api/v1';
+const userButton = document.querySelector('#user-button');
+const userDialog = document.querySelector('#user-dialog');
+const menuDialog = document.querySelector('#menu-dialog');
+const restaurantList = document.querySelector('#restaurant-list');
 
-// generic fetch function: throws an error if the response is not ok
-async function fetchData(url, options) {
-  const response = await fetch(url, options);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  const json = await response.json();
-  return json;
-}
-
-// returns the restaurant array, or null if the request failed
-async function getRestaurants() {
-  try {
-    const restaurants = await fetchData(`${API_URL}/restaurants`);
-    console.log('Fetched restaurants:', restaurants);
-    return restaurants;
-  } catch (error) {
-    console.error('Error fetching restaurants:', error);
-    return null;
-  }
-}
-
-// returns the daily menu object, or null if the request failed
-async function fetchRestaurantDetails(id) {
-  try {
-    const details = await fetchData(`${API_URL}/restaurants/daily/${id}/fi`);
-    return details;
-  } catch (error) {
-    console.error('Error fetching restaurant details:', error);
-    return null;
-  }
-}
-
-// get refs to elements
-const dialog = document.querySelector('dialog');
-const tableElem = document.querySelector('table');
-
-dialog.addEventListener('click', () => {
-  dialog.close();
-});
-
-dialog.addEventListener('close', () => {
-  const highlightedRow = document.querySelector('.highlight');
-  highlightedRow?.classList.remove('highlight');
-});
-
-async function main() {
-  const restaurants = await getRestaurants();
-
-  // show an error message if the restaurant list could not be loaded
-  if (!restaurants) {
-    const message = document.createElement('p');
-    message.textContent =
-      'Restaurants could not be loaded. Check your VPN or network connection and try again.';
-    document.body.appendChild(message);
+// Fill the menu dialog with the restaurant's data and open it
+const openMenuDialog = (id) => {
+  const restaurant = restaurants.find((item) => item.id === id);
+  if (!restaurant) {
     return;
   }
 
-  // sort the restaurants by name in ascending order
-  restaurants.sort((a, b) => a.name.localeCompare(b.name));
+  menuDialog.querySelector('.dialog-header h2').textContent = restaurant.name;
+  menuDialog.querySelector('.restaurant-info').textContent =
+    `${restaurant.address} · ${restaurant.phone}`;
 
-  for (const restaurant of restaurants) {
-    const tableRow = document.createElement('tr');
-    const nameCell = document.createElement('td');
-    const addressCell = document.createElement('td');
+  const menuList = menuDialog.querySelector('#menu-list');
+  menuList.innerHTML = '';
+  restaurant.menu.forEach((course) => {
+    const item = document.createElement('li');
+    const name = document.createElement('span');
+    const price = document.createElement('span');
+    name.textContent = course.name;
+    price.textContent = course.price || 'Ei hintaa';
+    item.append(name, price);
+    menuList.append(item);
+  });
 
-    nameCell.textContent = restaurant.name;
-    addressCell.textContent = restaurant.address;
+  menuDialog.showModal();
+};
 
-    tableRow.appendChild(nameCell);
-    tableRow.appendChild(addressCell);
-    tableElem.appendChild(tableRow);
+userButton.addEventListener('click', () => {
+  userDialog.showModal();
+});
 
-    tableRow.addEventListener('click', async () => {
-      // highlight only the clicked row
-      const highlightedRow = document.querySelector('.highlight');
-      highlightedRow?.classList.remove('highlight');
-      tableRow.classList.add('highlight');
-
-      dialog.innerHTML = ''; // clear previous content
-
-      // restaurant details
-      const title = document.createElement('h2');
-      title.textContent = restaurant.name;
-
-      const info = document.createElement('div');
-      const infoList = [
-        `Address: ${restaurant.address}`,
-        `Postal Code: ${restaurant.postalCode}`,
-        `City: ${restaurant.city}`,
-        restaurant.phone !== '-'
-          ? `Phone: ${restaurant.phone}`
-          : 'Phone: Not available',
-        `Company: ${restaurant.company}`,
-      ];
-      for (const line of infoList) {
-        const lineElem = document.createElement('div');
-        lineElem.textContent = line;
-        info.appendChild(lineElem);
-      }
-
-      // menu placeholder, filled in after the request
-      const foodlist = document.createElement('h3');
-      foodlist.textContent = 'Menu:';
-      const menuElem = document.createElement('div');
-      menuElem.textContent = 'Loading menu...';
-
-      // the scrolling happens inside this wrapper, not in the dialog itself
-      const content = document.createElement('div');
-      content.className = 'content';
-      content.append(title, info, foodlist, menuElem);
-      dialog.append(content);
-      dialog.showModal(); // open right away so a second click is not possible
-
-      const menu = await fetchRestaurantDetails(restaurant._id);
-      menuElem.textContent = '';
-
-      if (!menu) {
-        menuElem.textContent = 'Menu could not be loaded.';
-      } else if (!menu.courses?.length) {
-        menuElem.textContent = 'No menu available for today.';
-      } else {
-        for (const course of menu.courses) {
-          const courseElem = document.createElement('div');
-          const diets = course.diets ? ` (${course.diets})` : '';
-          courseElem.textContent = `${course.name}, ${course.price}${diets}`;
-          menuElem.appendChild(courseElem);
-        }
-      }
-    });
+// One listener on the list works for every card
+restaurantList.addEventListener('click', (event) => {
+  if (event.target.closest('.favorite-button')) {
+    return;
   }
-}
+  const card = event.target.closest('.restaurant-card');
+  if (card) {
+    openMenuDialog(card.dataset.id);
+  }
+});
 
-main();
+// Map with example markers
+const map = L.map('map-container').setView([60.195, 24.97], 12);
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap contributors',
+}).addTo(map);
+
+restaurants.forEach((restaurant) => {
+  L.marker(restaurant.coordinates).addTo(map).bindPopup(restaurant.name);
+});

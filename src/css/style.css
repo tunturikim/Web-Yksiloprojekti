@@ -313,9 +313,6 @@ dialog::backdrop {
 }
 
 #map-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 16rem;
   color: var(--text-muted);
   background-color: var(--surface);
