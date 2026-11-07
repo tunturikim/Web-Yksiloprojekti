@@ -295,3 +295,52 @@ dialog::backdrop {
   cursor: pointer;
   margin-top: 0.5rem;
 }
+
+#map {
+  margin-top: 1rem;
+}
+
+#map-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 16rem;
+  color: var(--text-muted);
+  background-color: var(--surface);
+  border: 1px dashed var(--text-muted);
+  border-radius: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  main {
+    display: grid;
+    grid-template-columns: 24rem 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'filters map'
+      'list    map';
+    gap: 1rem;
+  }
+
+  #filters {
+    grid-area: filters;
+    margin-bottom: 0;
+  }
+
+  #restaurants {
+    grid-area: list;
+  }
+
+  #map {
+    grid-area: map;
+    margin-top: 0;
+  }
+
+  #map-container {
+    height: 100%;
+  }
+
+  main .view-toggle {
+    display: none;
+  }
+}
