@@ -346,6 +346,10 @@ dialog::backdrop {
   #map {
     grid-area: map;
     margin-top: 0;
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+    height: calc(100vh - 2rem);
   }
 
   #map-container {
