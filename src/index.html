@@ -1,27 +1,142 @@
 <!doctype html>
-<html lang="en">
+<html lang="fi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Restaurants</title>
+    <title>Opiskelijaravintolat</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
-    <script src="main.js" defer></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- <script type="module" src="js/main.js"></script> -->
   </head>
 
   <body>
-    <h1>Restaurants</h1>
-    <table>
-      <tr>
-        <th>Name</th>
-        <th>Address</th>
-      </tr>
-    </table>
-    <dialog></dialog>
+    <header id="app-header">
+      <h1>Opiskelijaravintolat</h1>
+      <button type="button" id="user-button">Kirjaudu</button>
+    </header>
+
+    <main>
+      <section id="filters" aria-label="Suodattimet">
+        <div class="filter-group">
+          <label for="city-filter">Kaupunki</label>
+          <select id="city-filter">
+            <option value="">Kaikki</option>
+            <option>Helsinki</option>
+            <option>Espoo</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="provider-filter">Palveluntarjoaja</label>
+          <select id="provider-filter">
+            <option value="">Kaikki</option>
+            <option>Sodexo</option>
+            <option>Compass Group</option>
+          </select>
+        </div>
+        <button type="button" id="nearest-button">Näytä lähin</button>
+      </section>
+
+      <div class="view-toggle">
+        <button type="button" class="active">Lista</button>
+        <button type="button">Kartta</button>
+      </div>
+
+      <section id="restaurants" aria-label="Ravintolat">
+        <ul id="restaurant-list">
+          <li class="restaurant-card nearest" data-id="1">
+            <div class="card-header">
+              <h2>DIAK Kalasatama</h2>
+              <button
+                type="button"
+                class="favorite-button"
+                aria-label="Lisää suosikiksi"
+                aria-pressed="false"
+              >
+                ♡
+              </button>
+            </div>
+            <p class="card-address">Kyläsaarenkuja 2, Helsinki</p>
+            <span class="badge">Lähin · 0,4 km</span>
+          </li>
+          <li class="restaurant-card" data-id="2">
+            <div class="card-header">
+              <h2>Fiilu</h2>
+              <button
+                type="button"
+                class="favorite-button"
+                aria-label="Lisää suosikiksi"
+                aria-pressed="false"
+              >
+                ♡
+              </button>
+            </div>
+            <p class="card-address">Piippukatu 11, Helsinki</p>
+          </li>
+          <li class="restaurant-card" data-id="3">
+            <div class="card-header">
+              <h2>Hesburger</h2>
+              <button
+                type="button"
+                class="favorite-button"
+                aria-label="Lisää suosikiksi"
+                aria-pressed="false"
+              >
+                ♡
+              </button>
+            </div>
+            <p class="card-address">Hämeentie 135, Helsinki</p>
+          </li>
+        </ul>
+      </section>
+
+      <section id="map" aria-label="Kartta">
+        <div id="map-container">Kartta tulee tähän</div>
+      </section>
+    </main>
+
+    <dialog id="menu-dialog">
+      <div class="dialog-content">
+        <div class="dialog-header">
+          <h2>DIAK Kalasatama</h2>
+          <form method="dialog">
+            <button type="submit" aria-label="Sulje">✕</button>
+          </form>
+        </div>
+        <p class="restaurant-info">Kyläsaarenkuja 2, Helsinki · 040 123 4567</p>
+        <div class="view-toggle">
+          <button type="button" class="active">Päivä</button>
+          <button type="button">Viikko</button>
+        </div>
+        <ul id="menu-list">
+          <li><span>Kasviskeitto (G, L)</span><span>4,20 €</span></li>
+          <li><span>Broileripasta</span><span>2,95 €</span></li>
+          <li><span>Linssipata (VL)</span><span>Ei hintaa</span></li>
+        </ul>
+      </div>
+    </dialog>
+
+    <dialog id="user-dialog">
+      <div class="dialog-content">
+        <div class="dialog-header">
+          <h2>Kirjaudu</h2>
+          <form method="dialog">
+            <button type="submit" aria-label="Sulje">✕</button>
+          </form>
+        </div>
+        <form id="login-form">
+          <label for="login-username">Käyttäjänimi</label>
+          <input type="text" id="login-username" name="username" required />
+          <label for="login-password">Salasana</label>
+          <input type="password" id="login-password" name="password" required />
+          <button type="submit">Kirjaudu</button>
+        </form>
+      </div>
+    </dialog>
   </body>
 </html>
