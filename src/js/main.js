@@ -1,5 +1,5 @@
 import {API_URL, state} from './variables.js';
-import {fetchData} from './utils.js';
+import {fetchData, sortRestaurantsByDistance} from './utils.js';
 import {createMap, showMarkers} from './map.js';
 import {
   fillSelect,
@@ -18,6 +18,7 @@ const weeklyButton = document.querySelector('#weekly-button');
 const restaurantList = document.querySelector('#restaurant-list');
 const cityFilter = document.querySelector('#city-filter');
 const providerFilter = document.querySelector('#provider-filter');
+const nearestButton = document.querySelector('#nearest-button');
 
 // Load the selected restaurant's menu ('daily' or 'weekly')
 const loadMenu = async (mode) => {
@@ -85,6 +86,53 @@ const applyFilters = () => {
   showMarkers(filtered, openMenuDialog);
 };
 
+// Find the nearest restaurant to the given position and highlight it
+const markNearest = (latitude, longitude) => {
+  let nearest = null;
+
+  state.restaurants.forEach((restaurant) => {
+    if (!restaurant.location) {
+      return;
+    }
+    const restaurantLongitude = restaurant.location.coordinates[0];
+    const restaurantLatitude = restaurant.location.coordinates[1];
+    restaurant.distance = calculateDistance(
+      latitude,
+      longitude,
+      restaurantLatitude,
+      restaurantLongitude
+    );
+    if (nearest === null || restaurant.distance < nearest.distance) {
+      nearest = restaurant;
+    }
+  });
+
+  state.nearestRestaurant = nearest;
+  applyFilters();
+
+  // Scroll the highlighted card into view (it may be filtered out)
+  const nearestCard = document.querySelector('.restaurant-card.nearest');
+  if (nearestCard) {
+    nearestCard.scrollIntoView();
+  }
+};
+
+// Ask the browser for the user's location
+const findNearest = () => {
+  if (!navigator.geolocation) {
+    alert('Selain ei tue sijaintia.');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      markNearest(position.coords.latitude, position.coords.longitude);
+    },
+    () => {
+      alert('Sijaintia ei saatu. Salli sijainnin käyttö selaimessa.');
+    }
+  );
+};
+
 // Collect each city and company once and add them to the selects
 const createFilterOptions = () => {
   const cities = [];
@@ -148,6 +196,7 @@ weeklyButton.addEventListener('click', () => {
 
 cityFilter.addEventListener('change', applyFilters);
 providerFilter.addEventListener('change', applyFilters);
+nearestButton.addEventListener('click', findNearest);
 
 // Load the restaurants when the page is opened
 loadRestaurants();

@@ -19,3 +19,27 @@ export const formatDate = (dateString) => {
       });
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
+
+// Distance between two points as degrees (not kilometers)
+export function distanceCalculator(lat1, lon1, lat2, lon2) {
+  return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lon2 - lon1, 2));
+}
+
+// Sort restaurants so that the closest one is first
+export function sortRestaurantsByDistance(restaurants, userLocation) {
+  return restaurants.sort(
+    (a, b) =>
+      distanceCalculator(
+        userLocation.lat,
+        userLocation.lon,
+        a.location.coordinates[1],
+        a.location.coordinates[0]
+      ) -
+      distanceCalculator(
+        userLocation.lat,
+        userLocation.lon,
+        b.location.coordinates[1],
+        b.location.coordinates[0]
+      )
+  );
+}
