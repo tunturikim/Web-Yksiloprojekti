@@ -109,3 +109,13 @@ export const renderWeekMenu = (menu, listElement) => {
     appendCourses(day.courses, listElement);
   });
 };
+
+// Add options to a select element
+export const fillSelect = (select, values) => {
+  values.forEach((value) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    select.append(option);
+  });
+};

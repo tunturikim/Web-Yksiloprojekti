@@ -1,6 +1,7 @@
 import {API_URL, state} from './variables.js';
 import {fetchData} from './utils.js';
 import {
+  fillSelect,
   renderDayMenu,
   renderMessage,
   renderRestaurantList,
@@ -14,6 +15,8 @@ const menuList = document.querySelector('#menu-list');
 const dailyButton = document.querySelector('#daily-button');
 const weeklyButton = document.querySelector('#weekly-button');
 const restaurantList = document.querySelector('#restaurant-list');
+const cityFilter = document.querySelector('#city-filter');
+const providerFilter = document.querySelector('#provider-filter');
 
 // Load the selected restaurant's menu ('daily' or 'weekly')
 const loadMenu = async (mode) => {
@@ -58,6 +61,48 @@ const openMenuDialog = (restaurant) => {
   loadMenu('daily');
 };
 
+// Show the restaurants that match the selected filters
+const applyFilters = () => {
+  const city = cityFilter.value;
+  const company = providerFilter.value;
+
+  const filtered = state.restaurants.filter((restaurant) => {
+    if (city !== '' && restaurant.city !== city) {
+      return false;
+    }
+    if (company !== '' && restaurant.company !== company) {
+      return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    renderMessage('Ei ravintoloita valituilla suodattimilla.', restaurantList);
+    return;
+  }
+  renderRestaurantList(filtered, restaurantList, openMenuDialog);
+};
+
+// Collect each city and company once and add them to the selects
+const createFilterOptions = () => {
+  const cities = [];
+  const companies = [];
+
+  state.restaurants.forEach((restaurant) => {
+    if (!cities.includes(restaurant.city)) {
+      cities.push(restaurant.city);
+    }
+    if (!companies.includes(restaurant.company)) {
+      companies.push(restaurant.company);
+    }
+  });
+
+  cities.sort((a, b) => a.localeCompare(b, 'fi'));
+  companies.sort((a, b) => a.localeCompare(b, 'fi'));
+  fillSelect(cityFilter, cities);
+  fillSelect(providerFilter, companies);
+};
+
 // Fetch all restaurants, save them to state and show them as cards
 const loadRestaurants = async () => {
   renderMessage('Ladataan ravintoloita...', restaurantList);
@@ -69,7 +114,9 @@ const loadRestaurants = async () => {
     } else {
       state.restaurants = data.restaurants;
     }
-    renderRestaurantList(state.restaurants, restaurantList, openMenuDialog);
+    state.restaurants.sort((a, b) => a.name.localeCompare(b.name, 'fi'));
+    createFilterOptions();
+    applyFilters();
   } catch (error) {
     console.error(error);
     renderMessage(
@@ -93,6 +140,9 @@ weeklyButton.addEventListener('click', () => {
   setActiveMode('weekly');
   loadMenu('weekly');
 });
+
+cityFilter.addEventListener('change', applyFilters);
+providerFilter.addEventListener('change', applyFilters);
 
 // Map (markers are added in the next step)
 const map = L.map('map-container').setView([60.195, 24.97], 11);
