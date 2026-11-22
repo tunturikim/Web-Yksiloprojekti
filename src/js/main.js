@@ -96,15 +96,18 @@ const markNearest = (latitude, longitude) => {
 
 // Ask the browser for the user's location
 const findNearest = () => {
+  console.log('findNearest called');
   if (!navigator.geolocation) {
     alert('Selain ei tue sijaintia.');
     return;
   }
   navigator.geolocation.getCurrentPosition(
     (position) => {
+      console.log('position found');
       markNearest(position.coords.latitude, position.coords.longitude);
     },
-    () => {
+    (error) => {
+      console.error(error.code, error.message);
       alert('Sijaintia ei saatu. Salli sijainnin käyttö selaimessa.');
     }
   );
