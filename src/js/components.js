@@ -1,4 +1,3 @@
-import {formatDate} from './utils.js';
 import {state} from './variables.js';
 
 // Show a message (loading, error) inside a list

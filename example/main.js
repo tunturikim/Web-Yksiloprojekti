@@ -16,7 +16,6 @@ async function fetchData(url, options) {
 async function getRestaurants() {
   try {
     const restaurants = await fetchData(`${API_URL}/restaurants`);
-    console.log('Fetched restaurants:', restaurants);
     return restaurants;
   } catch (error) {
     console.error('Error fetching restaurants:', error);
