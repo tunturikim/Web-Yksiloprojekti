@@ -1,5 +1,6 @@
 import {API_URL, state} from './variables.js';
 import {fetchData} from './utils.js';
+import {createMap, showMarkers} from './map.js';
 import {
   fillSelect,
   renderDayMenu,
@@ -78,9 +79,10 @@ const applyFilters = () => {
 
   if (filtered.length === 0) {
     renderMessage('Ei ravintoloita valituilla suodattimilla.', restaurantList);
-    return;
+  } else {
+    renderRestaurantList(filtered, restaurantList, openMenuDialog);
   }
-  renderRestaurantList(filtered, restaurantList, openMenuDialog);
+  showMarkers(filtered, openMenuDialog);
 };
 
 // Collect each city and company once and add them to the selects
@@ -102,6 +104,9 @@ const createFilterOptions = () => {
   fillSelect(cityFilter, cities);
   fillSelect(providerFilter, companies);
 };
+
+// Create the map and show the restaurants as markers
+createMap();
 
 // Fetch all restaurants, save them to state and show them as cards
 const loadRestaurants = async () => {
@@ -144,12 +149,5 @@ weeklyButton.addEventListener('click', () => {
 cityFilter.addEventListener('change', applyFilters);
 providerFilter.addEventListener('change', applyFilters);
 
-// Map (markers are added in the next step)
-const map = L.map('map-container').setView([60.195, 24.97], 11);
-
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap contributors',
-}).addTo(map);
-
+// Load the restaurants when the page is opened
 loadRestaurants();
