@@ -64,8 +64,13 @@ const loadMenu = async (mode) => {
 
 // Highlight the active day/week button
 const setActiveMode = (mode) => {
-  dailyButton.classList.toggle('active', mode === 'daily');
-  weeklyButton.classList.toggle('active', mode === 'weekly');
+  if (mode === 'daily') {
+    dailyButton.classList.add('active');
+    weeklyButton.classList.remove('active');
+  } else {
+    dailyButton.classList.remove('active');
+    weeklyButton.classList.add('active');
+  }
 };
 
 // Fill the dialog with the restaurant's info and open it with the daily menu
@@ -159,28 +164,37 @@ const findNearest = () => {
 
 // Show either the list or the map (used on mobile)
 const showView = (view) => {
-  restaurantsSection.classList.toggle('hidden', view !== 'list');
-  mapSection.classList.toggle('hidden', view !== 'map');
-  listButton.classList.toggle('active', view === 'list');
-  mapButton.classList.toggle('active', view === 'map');
-  if (view === 'map') {
+  if (view === 'list') {
+    restaurantsSection.classList.remove('hidden');
+    mapSection.classList.add('hidden');
+    listButton.classList.add('active');
+    mapButton.classList.remove('active');
+  } else {
+    restaurantsSection.classList.add('hidden');
+    mapSection.classList.remove('hidden');
+    listButton.classList.remove('active');
+    mapButton.classList.add('active');
     refreshMap();
   }
 };
 
 // Show one part of the user dialog: 'login', 'register' or 'loggedIn'
 const showUserView = (view) => {
-  loginForm.classList.toggle('hidden', view !== 'login');
-  registerForm.classList.toggle('hidden', view !== 'register');
-  loggedInSection.classList.toggle('hidden', view !== 'loggedIn');
+  // Hide everything first, then show the one we want
+  loginForm.classList.add('hidden');
+  registerForm.classList.add('hidden');
+  loggedInSection.classList.add('hidden');
 
   if (view === 'login') {
+    loginForm.classList.remove('hidden');
     userDialogTitle.textContent = 'Kirjaudu';
   }
   if (view === 'register') {
+    registerForm.classList.remove('hidden');
     userDialogTitle.textContent = 'Rekisteröidy';
   }
   if (view === 'loggedIn') {
+    loggedInSection.classList.remove('hidden');
     userDialogTitle.textContent = 'Käyttäjä';
   }
 };
