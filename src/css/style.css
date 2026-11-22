@@ -278,9 +278,10 @@ dialog::backdrop {
 
 #menu-list li {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   padding: 0.75rem 0;
-  gap: 1rem;
+  gap: 0.25rem 1rem;
   border-bottom: 1px solid var(--hover);
 }
 
@@ -289,7 +290,6 @@ dialog::backdrop {
 }
 
 #menu-list li span:last-child {
-  white-space: nowrap;
   font-weight: var(--font-weight-bold);
 }
 
