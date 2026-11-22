@@ -320,6 +320,16 @@ dialog::backdrop {
   border-radius: 0.75rem;
 }
 
+.message {
+  color: var(--text-muted);
+}
+
+.menu-day {
+  color: var(--accent);
+  font-weight: var(--font-weight-bold);
+  text-transform: capitalize;
+}
+
 @media (min-width: 768px) {
   main {
     display: grid;

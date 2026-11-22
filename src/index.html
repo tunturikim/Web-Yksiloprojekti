@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Opiskelijaravintolat</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Fraunces:wght@600&display=swap"
       rel="stylesheet"
@@ -14,12 +12,12 @@
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
+    <link rel="stylesheet" href="css/style.css" />
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       defer
     ></script>
-    <script src="js/main.js" defer></script>
-    <link rel="stylesheet" href="css/style.css" />
+    <script type="module" src="js/main.js"></script>
   </head>
 
   <body>
@@ -29,13 +27,11 @@
     </header>
 
     <main>
-      <section id="filters" aria-label="Suodattimet">
+      <div id="filters">
         <div class="filter-group">
           <label for="city-filter">Kaupunki</label>
           <select id="city-filter">
             <option value="">Kaikki</option>
-            <option>Helsinki</option>
-            <option>Espoo</option>
           </select>
         </div>
 
@@ -43,89 +39,40 @@
           <label for="provider-filter">Palveluntarjoaja</label>
           <select id="provider-filter">
             <option value="">Kaikki</option>
-            <option>Sodexo</option>
-            <option>Compass Group</option>
           </select>
         </div>
+
         <button type="button" id="nearest-button">Näytä lähin</button>
-      </section>
+      </div>
 
       <div class="view-toggle">
         <button type="button" class="active">Lista</button>
         <button type="button">Kartta</button>
       </div>
 
-      <section id="restaurants" aria-label="Ravintolat">
-        <ul id="restaurant-list">
-          <li class="restaurant-card nearest" data-id="1">
-            <div class="card-header">
-              <h2>DIAK Kalasatama</h2>
-              <button
-                type="button"
-                class="favorite-button"
-                aria-label="Lisää suosikiksi"
-                aria-pressed="false"
-              >
-                ♡
-              </button>
-            </div>
-            <p class="card-address">Kyläsaarenkuja 2, Helsinki</p>
-            <span class="badge">Lähin · 0,4 km</span>
-          </li>
-          <li class="restaurant-card" data-id="2">
-            <div class="card-header">
-              <h2>Fiilu</h2>
-              <button
-                type="button"
-                class="favorite-button"
-                aria-label="Lisää suosikiksi"
-                aria-pressed="false"
-              >
-                ♡
-              </button>
-            </div>
-            <p class="card-address">Piippukatu 11, Helsinki</p>
-          </li>
-          <li class="restaurant-card" data-id="3">
-            <div class="card-header">
-              <h2>Hesburger</h2>
-              <button
-                type="button"
-                class="favorite-button"
-                aria-label="Lisää suosikiksi"
-                aria-pressed="false"
-              >
-                ♡
-              </button>
-            </div>
-            <p class="card-address">Hämeentie 135, Helsinki</p>
-          </li>
-        </ul>
-      </section>
+      <div id="restaurants">
+        <ul id="restaurant-list"></ul>
+      </div>
 
-      <section id="map" aria-label="Kartta">
+      <div id="map">
         <div id="map-container"></div>
-      </section>
+      </div>
     </main>
 
     <dialog id="menu-dialog">
       <div class="dialog-content">
         <div class="dialog-header">
-          <h2>DIAK Kalasatama</h2>
+          <h2>Ravintola</h2>
           <form method="dialog">
             <button type="submit" aria-label="Sulje">✕</button>
           </form>
         </div>
-        <p class="restaurant-info">Kyläsaarenkuja 2, Helsinki · 040 123 4567</p>
+        <p class="restaurant-info">Osoite</p>
         <div class="view-toggle">
-          <button type="button" class="active">Päivä</button>
-          <button type="button">Viikko</button>
+          <button type="button" class="active" id="daily-button">Päivä</button>
+          <button type="button" id="weekly-button">Viikko</button>
         </div>
-        <ul id="menu-list">
-          <li><span>Kasviskeitto (G, L)</span><span> 4,20 €</span></li>
-          <li><span>Broileripasta</span><span> 2,95 €</span></li>
-          <li><span>Linssipata (VL)</span><span> Ei hintaa</span></li>
-        </ul>
+        <ul id="menu-list"></ul>
       </div>
     </dialog>
 
