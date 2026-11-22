@@ -10,9 +10,17 @@ export const renderMessage = (text, listElement) => {
   listElement.append(item);
 };
 
+// Is this restaurant the favorite of the logged in user?
+const isFavorite = (restaurant) => {
+  if (!state.user) {
+    return false;
+  }
+  return state.user.favouriteRestaurant === restaurant._id;
+};
+
 // Create one restaurant card
 // onCardClick is called with the restaurant when the card is clicked
-const createRestaurantCard = (restaurant, onCardClick) => {
+const createRestaurantCard = (restaurant, onCardClick, onFavoriteClick) => {
   const card = document.createElement('li');
   card.className = 'restaurant-card';
 
@@ -25,8 +33,20 @@ const createRestaurantCard = (restaurant, onCardClick) => {
   const favoriteButton = document.createElement('button');
   favoriteButton.type = 'button';
   favoriteButton.className = 'favorite-button';
-  favoriteButton.setAttribute('aria-label', 'Lisää suosikiksi');
-  favoriteButton.textContent = '♡';
+  if (isFavorite(restaurant)) {
+    favoriteButton.textContent = '♥';
+    favoriteButton.setAttribute('aria-label', `Suosikki: ${restaurant.name}`);
+  } else {
+    favoriteButton.textContent = '♡';
+    favoriteButton.setAttribute(
+      'aria-label',
+      `Lisää suosikiksi: ${restaurant.name}`
+    );
+  }
+  favoriteButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    onFavoriteClick(restaurant);
+  });
 
   const address = document.createElement('p');
   address.className = 'card-address';
@@ -44,6 +64,14 @@ const createRestaurantCard = (restaurant, onCardClick) => {
     card.append(badge);
   }
 
+  // Highlight the favorite restaurant
+  if (isFavorite(restaurant)) {
+    const favoriteBadge = document.createElement('span');
+    favoriteBadge.className = 'badge';
+    favoriteBadge.textContent = 'Suosikki';
+    card.append(favoriteBadge);
+  }
+
   card.addEventListener('click', () => {
     onCardClick(restaurant);
   });
@@ -57,10 +85,17 @@ const createRestaurantCard = (restaurant, onCardClick) => {
 };
 
 // Clear the list and fill it with a card for each restaurant
-export const renderRestaurantList = (restaurants, listElement, onCardClick) => {
+export const renderRestaurantList = (
+  restaurants,
+  listElement,
+  onCardClick,
+  onFavoriteClick
+) => {
   listElement.innerHTML = '';
   restaurants.forEach((restaurant) => {
-    listElement.append(createRestaurantCard(restaurant, onCardClick));
+    listElement.append(
+      createRestaurantCard(restaurant, onCardClick, onFavoriteClick)
+    );
   });
 };
 

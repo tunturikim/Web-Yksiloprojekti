@@ -1,5 +1,5 @@
 import {API_URL, state} from './variables.js';
-import {login, register, logout, restoreLogin} from './auth.js';
+import {login, register, logout, restoreLogin, saveFavorite} from './auth.js';
 import {fetchData, sortRestaurantsByDistance} from './utils.js';
 import {createMap, refreshMap, showMarkers} from './map.js';
 import {
@@ -103,9 +103,34 @@ const applyFilters = () => {
   if (filtered.length === 0) {
     renderMessage('Ei ravintoloita valituilla suodattimilla.', restaurantList);
   } else {
-    renderRestaurantList(filtered, restaurantList, openMenuDialog);
+    renderRestaurantList(
+      filtered,
+      restaurantList,
+      openMenuDialog,
+      toggleFavorite
+    );
   }
   showMarkers(filtered, openMenuDialog);
+};
+
+// Set the clicked restaurant as the favorite
+const toggleFavorite = async (restaurant) => {
+  if (!state.user) {
+    userDialog.showModal();
+    return;
+  }
+
+  // The API cannot remove a favorite, so nothing to do if it is already one
+  if (state.user.favouriteRestaurant === restaurant._id) {
+    return;
+  }
+
+  try {
+    await saveFavorite(restaurant._id);
+    applyFilters();
+  } catch (error) {
+    console.log('Saving favorite failed:', error);
+  }
 };
 
 // Sort the restaurants by distance and highlight the nearest one
@@ -169,6 +194,11 @@ const updateUserUI = () => {
   } else {
     userButton.textContent = 'Kirjaudu';
     showUserView('login');
+  }
+
+  // Redraw the list so the hearts match the logged in user
+  if (state.restaurants.length > 0) {
+    applyFilters();
   }
 };
 

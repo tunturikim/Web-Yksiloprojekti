@@ -53,3 +53,18 @@ export const restoreLogin = async () => {
     localStorage.removeItem('token');
   }
 };
+
+// Save the favorite restaurant
+export const saveFavorite = async (restaurantId) => {
+  const token = localStorage.getItem('token');
+  const options = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({favouriteRestaurant: restaurantId}),
+  };
+  const result = await fetchData(`${API_URL}/users`, options);
+  state.user.favouriteRestaurant = result.data.favouriteRestaurant;
+};
