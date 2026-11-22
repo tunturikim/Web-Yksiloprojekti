@@ -1,4 +1,5 @@
 import {formatDate} from './utils.js';
+import {state} from './variables.js';
 
 // Show a message (loading, error) inside a list
 export const renderMessage = (text, listElement) => {
@@ -33,6 +34,15 @@ const createRestaurantCard = (restaurant, onCardClick) => {
 
   header.append(name, favoriteButton);
   card.append(header, address);
+
+  // Highlight the nearest restaurant
+  if (restaurant === state.nearestRestaurant) {
+    card.classList.add('nearest');
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = 'Lähin';
+    card.append(badge);
+  }
 
   card.addEventListener('click', () => {
     onCardClick(restaurant);

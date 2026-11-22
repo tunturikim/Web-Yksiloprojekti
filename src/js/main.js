@@ -86,35 +86,12 @@ const applyFilters = () => {
   showMarkers(filtered, openMenuDialog);
 };
 
-// Find the nearest restaurant to the given position and highlight it
+// Sort the restaurants by distance and highlight the nearest one
 const markNearest = (latitude, longitude) => {
-  let nearest = null;
-
-  state.restaurants.forEach((restaurant) => {
-    if (!restaurant.location) {
-      return;
-    }
-    const restaurantLongitude = restaurant.location.coordinates[0];
-    const restaurantLatitude = restaurant.location.coordinates[1];
-    restaurant.distance = calculateDistance(
-      latitude,
-      longitude,
-      restaurantLatitude,
-      restaurantLongitude
-    );
-    if (nearest === null || restaurant.distance < nearest.distance) {
-      nearest = restaurant;
-    }
-  });
-
-  state.nearestRestaurant = nearest;
+  const userLocation = {lat: latitude, lon: longitude};
+  sortRestaurantsByDistance(state.restaurants, userLocation);
+  state.nearestRestaurant = state.restaurants[0];
   applyFilters();
-
-  // Scroll the highlighted card into view (it may be filtered out)
-  const nearestCard = document.querySelector('.restaurant-card.nearest');
-  if (nearestCard) {
-    nearestCard.scrollIntoView();
-  }
 };
 
 // Ask the browser for the user's location
