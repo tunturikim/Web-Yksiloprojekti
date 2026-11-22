@@ -79,18 +79,46 @@
     <dialog id="user-dialog">
       <div class="dialog-content">
         <div class="dialog-header">
-          <h2>Kirjaudu</h2>
+          <h2 id="user-dialog-title">Kirjaudu</h2>
           <form method="dialog">
             <button type="submit" aria-label="Sulje">✕</button>
           </form>
         </div>
-        <form id="login-form">
+
+        <form id="login-form" class="auth-form">
           <label for="login-username">Käyttäjänimi</label>
-          <input type="text" id="login-username" name="username" required />
+          <input type="text" id="login-username" required />
           <label for="login-password">Salasana</label>
-          <input type="password" id="login-password" name="password" required />
-          <button type="submit">Kirjaudu</button>
+          <input type="password" id="login-password" required />
+          <p class="form-error" id="login-error"></p>
+          <button type="submit" class="primary-button">Kirjaudu</button>
+          <button type="button" class="link-button" id="show-register">
+            Ei tiliä? Rekisteröidy
+          </button>
         </form>
+
+        <form id="register-form" class="auth-form hidden">
+          <label for="register-username">Käyttäjänimi</label>
+          <input type="text" id="register-username" required />
+          <label for="register-email">Sähköposti</label>
+          <input type="email" id="register-email" required />
+          <label for="register-password">Salasana</label>
+          <input type="password" id="register-password" required />
+          <label for="register-password2">Salasana uudelleen</label>
+          <input type="password" id="register-password2" required />
+          <p class="form-error" id="register-error"></p>
+          <button type="submit" class="primary-button">Rekisteröidy</button>
+          <button type="button" class="link-button" id="show-login">
+            Onko sinulla tili? Kirjaudu
+          </button>
+        </form>
+
+        <div id="logged-in" class="auth-form hidden">
+          <p id="logged-in-text"></p>
+          <button type="button" class="primary-button" id="logout-button">
+            Kirjaudu ulos
+          </button>
+        </div>
       </div>
     </dialog>
   </body>

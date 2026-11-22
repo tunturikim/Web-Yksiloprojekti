@@ -5,4 +5,5 @@ export const state = {
   restaurants: [],
   selectedRestaurant: null,
   nearestRestaurant: null,
+  user: null,
 };

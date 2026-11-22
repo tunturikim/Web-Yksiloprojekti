@@ -1,6 +1,6 @@
 // Fetch JSON data from a URL
-export const fetchData = async (url) => {
-  const response = await fetch(url);
+export const fetchData = async (url, options) => {
+  const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(`Error ${response.status}: ${response.statusText}`);
   }

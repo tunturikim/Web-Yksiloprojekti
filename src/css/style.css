@@ -128,7 +128,7 @@ main {
 }
 
 #filters label,
-#login-form label {
+#auth-form label {
   color: var(--text-muted);
   font-size: 0.9rem;
 }
@@ -292,14 +292,14 @@ dialog::backdrop {
   font-weight: var(--font-weight-bold);
 }
 
-#login-form {
+.auth-form {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-top: 1rem;
 }
 
-#login-form button {
+.primary-button {
   font: inherit;
   font-weight: var(--font-weight-bold);
   background-color: var(--accent);
@@ -309,6 +309,21 @@ dialog::backdrop {
   min-height: 44px;
   cursor: pointer;
   margin-top: 0.5rem;
+}
+
+.link-button {
+  font: inherit;
+  background: none;
+  color: var(--accent);
+  border: none;
+  text-decoration: underline;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.form-error {
+  color: #b3261e;
+  margin: 0;
 }
 
 #map {

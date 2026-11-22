@@ -1,4 +1,5 @@
 import {API_URL, state} from './variables.js';
+import {login, register, logout, restoreLogin} from './auth.js';
 import {fetchData, sortRestaurantsByDistance} from './utils.js';
 import {createMap, refreshMap, showMarkers} from './map.js';
 import {
@@ -23,6 +24,23 @@ const listButton = document.querySelector('#list-button');
 const mapButton = document.querySelector('#map-button');
 const restaurantsSection = document.querySelector('#restaurants');
 const mapSection = document.querySelector('#map');
+
+const userDialogTitle = document.querySelector('#user-dialog-title');
+const loginForm = document.querySelector('#login-form');
+const loginUsername = document.querySelector('#login-username');
+const loginPassword = document.querySelector('#login-password');
+const loginError = document.querySelector('#login-error');
+const registerForm = document.querySelector('#register-form');
+const registerUsername = document.querySelector('#register-username');
+const registerEmail = document.querySelector('#register-email');
+const registerPassword = document.querySelector('#register-password');
+const registerPassword2 = document.querySelector('#register-password2');
+const registerError = document.querySelector('#register-error');
+const loggedInSection = document.querySelector('#logged-in');
+const loggedInText = document.querySelector('#logged-in-text');
+const logoutButton = document.querySelector('#logout-button');
+const showRegisterButton = document.querySelector('#show-register');
+const showLoginButton = document.querySelector('#show-login');
 
 // Load the selected restaurant's menu ('daily' or 'weekly')
 const loadMenu = async (mode) => {
@@ -125,6 +143,41 @@ const showView = (view) => {
   }
 };
 
+// Show one part of the user dialog: 'login', 'register' or 'loggedIn'
+const showUserView = (view) => {
+  loginForm.classList.toggle('hidden', view !== 'login');
+  registerForm.classList.toggle('hidden', view !== 'register');
+  loggedInSection.classList.toggle('hidden', view !== 'loggedIn');
+
+  if (view === 'login') {
+    userDialogTitle.textContent = 'Kirjaudu';
+  }
+  if (view === 'register') {
+    userDialogTitle.textContent = 'Rekisteröidy';
+  }
+  if (view === 'loggedIn') {
+    userDialogTitle.textContent = 'Käyttäjä';
+  }
+};
+
+// Update the header button and the dialog to match the login state
+const updateUserUI = () => {
+  if (state.user) {
+    userButton.textContent = state.user.username;
+    loggedInText.textContent = `Kirjautunut: ${state.user.username}`;
+    showUserView('loggedIn');
+  } else {
+    userButton.textContent = 'Kirjaudu';
+    showUserView('login');
+  }
+};
+
+// Check on page load if the user is still logged in
+const restoreUser = async () => {
+  await restoreLogin();
+  updateUserUI();
+};
+
 // Collect each city and company once and add them to the selects
 const createFilterOptions = () => {
   const cities = [];
@@ -194,9 +247,70 @@ mapButton.addEventListener('click', () => {
   showView('map');
 });
 
+showRegisterButton.addEventListener('click', () => {
+  showUserView('register');
+});
+
+showLoginButton.addEventListener('click', () => {
+  showUserView('login');
+});
+
+loginForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  loginError.textContent = '';
+  try {
+    await login(loginUsername.value, loginPassword.value);
+    loginForm.reset();
+    updateUserUI();
+    userDialog.close();
+  } catch (error) {
+    loginError.textContent =
+      'Kirjautuminen epäonnistui. Tarkista käyttäjänimi ja salasana.';
+  }
+});
+
+registerForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  registerError.textContent = '';
+
+  if (registerPassword.value !== registerPassword2.value) {
+    registerError.textContent = 'Salasanat eivät täsmää.';
+    return;
+  }
+
+  try {
+    await register(
+      registerUsername.value,
+      registerEmail.value,
+      registerPassword.value
+    );
+  } catch (error) {
+    // The server can create the user and still return an error
+    // (sending the activation email fails), so we continue to login
+    console.log('Register returned an error:', error);
+  }
+
+  try {
+    await login(registerUsername.value, registerPassword.value);
+    registerForm.reset();
+    updateUserUI();
+    userDialog.close();
+  } catch (error) {
+    registerError.textContent =
+      'Rekisteröinti epäonnistui. Käyttäjänimi tai sähköposti voi olla jo käytössä.';
+  }
+});
+
+logoutButton.addEventListener('click', () => {
+  logout();
+  updateUserUI();
+  userDialog.close();
+});
+
 cityFilter.addEventListener('change', applyFilters);
 providerFilter.addEventListener('change', applyFilters);
 nearestButton.addEventListener('click', findNearest);
 
 // Load the restaurants when the page is opened
 loadRestaurants();
+restoreUser();
