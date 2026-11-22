@@ -1,6 +1,6 @@
 import {API_URL, state} from './variables.js';
 import {fetchData, sortRestaurantsByDistance} from './utils.js';
-import {createMap, showMarkers} from './map.js';
+import {createMap, refreshMap, showMarkers} from './map.js';
 import {
   fillSelect,
   renderDayMenu,
@@ -19,6 +19,10 @@ const restaurantList = document.querySelector('#restaurant-list');
 const cityFilter = document.querySelector('#city-filter');
 const providerFilter = document.querySelector('#provider-filter');
 const nearestButton = document.querySelector('#nearest-button');
+const listButton = document.querySelector('#list-button');
+const mapButton = document.querySelector('#map-button');
+const restaurantsSection = document.querySelector('#restaurants');
+const mapSection = document.querySelector('#map');
 
 // Load the selected restaurant's menu ('daily' or 'weekly')
 const loadMenu = async (mode) => {
@@ -110,6 +114,17 @@ const findNearest = () => {
   );
 };
 
+// Show either the list or the map (used on mobile)
+const showView = (view) => {
+  restaurantsSection.classList.toggle('hidden', view !== 'list');
+  mapSection.classList.toggle('hidden', view !== 'map');
+  listButton.classList.toggle('active', view === 'list');
+  mapButton.classList.toggle('active', view === 'map');
+  if (view === 'map') {
+    refreshMap();
+  }
+};
+
 // Collect each city and company once and add them to the selects
 const createFilterOptions = () => {
   const cities = [];
@@ -169,6 +184,14 @@ dailyButton.addEventListener('click', () => {
 weeklyButton.addEventListener('click', () => {
   setActiveMode('weekly');
   loadMenu('weekly');
+});
+
+listButton.addEventListener('click', () => {
+  showView('list');
+});
+
+mapButton.addEventListener('click', () => {
+  showView('map');
 });
 
 cityFilter.addEventListener('change', applyFilters);

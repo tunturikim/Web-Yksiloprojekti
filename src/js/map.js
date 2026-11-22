@@ -1,5 +1,6 @@
 let map;
 let markerLayer;
+let markerPoints = [];
 
 // Create the map and an empty layer for the markers
 export const createMap = () => {
@@ -17,7 +18,7 @@ export const createMap = () => {
 // onMarkerClick is called with the restaurant when a marker is clicked
 export const showMarkers = (restaurants, onMarkerClick) => {
   markerLayer.clearLayers();
-  const points = [];
+  markerPoints = [];
 
   restaurants.forEach((restaurant) => {
     if (!restaurant.location) {
@@ -33,10 +34,18 @@ export const showMarkers = (restaurants, onMarkerClick) => {
       onMarkerClick(restaurant);
     });
     marker.addTo(markerLayer);
-    points.push([latitude, longitude]);
+    markerPoints.push([latitude, longitude]);
   });
 
-  if (points.length > 0) {
-    map.fitBounds(points, {maxZoom: 15});
+  if (markerPoints.length > 0) {
+    map.fitBounds(markerPoints, {maxZoom: 15});
+  }
+};
+
+// Call this when the map becomes visible after being hidden
+export const refreshMap = () => {
+  map.invalidateSize();
+  if (markerPoints.length > 0) {
+    map.fitBounds(markerPoints, {maxZoom: 15});
   }
 };
