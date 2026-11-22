@@ -235,13 +235,7 @@ createMap();
 const loadRestaurants = async () => {
   renderMessage('Ladataan ravintoloita...', restaurantList);
   try {
-    const data = await fetchData(`${API_URL}/restaurants`);
-    // Check in the console which one is true and delete the other branch
-    if (Array.isArray(data)) {
-      state.restaurants = data;
-    } else {
-      state.restaurants = data.restaurants;
-    }
+    state.restaurants = await fetchData(`${API_URL}/restaurants`);
     state.restaurants.sort((a, b) => a.name.localeCompare(b.name, 'fi'));
     createFilterOptions();
     applyFilters();

@@ -42,6 +42,7 @@ const createRestaurantCard = (restaurant, onCardClick, onFavoriteClick) => {
       `Lisää suosikiksi: ${restaurant.name}`
     );
   }
+  // The heart click must not open the menu
   favoriteButton.addEventListener('click', (event) => {
     event.stopPropagation();
     onFavoriteClick(restaurant);
@@ -73,11 +74,6 @@ const createRestaurantCard = (restaurant, onCardClick, onFavoriteClick) => {
 
   card.addEventListener('click', () => {
     onCardClick(restaurant);
-  });
-
-  // The heart click must not open the menu
-  favoriteButton.addEventListener('click', (event) => {
-    event.stopPropagation();
   });
 
   return card;
