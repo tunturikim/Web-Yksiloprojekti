@@ -24,6 +24,7 @@ const listButton = document.querySelector('#list-button');
 const mapButton = document.querySelector('#map-button');
 const restaurantsSection = document.querySelector('#restaurants');
 const mapSection = document.querySelector('#map');
+const themeButton = document.querySelector('#theme-button');
 
 const userDialogTitle = document.querySelector('#user-dialog-title');
 const loginForm = document.querySelector('#login-form');
@@ -175,6 +176,19 @@ const showView = (view) => {
     listButton.classList.remove('active');
     mapButton.classList.add('active');
     refreshMap();
+  }
+};
+
+// Set the theme: true = dark, false = light. The choice is saved
+const setDarkTheme = (isDark) => {
+  if (isDark) {
+    document.body.classList.add('dark');
+    themeButton.textContent = '☀️';
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.body.classList.remove('dark');
+    themeButton.textContent = '🌙';
+    localStorage.setItem('theme', 'light');
   }
 };
 
@@ -345,10 +359,20 @@ logoutButton.addEventListener('click', () => {
   userDialog.close();
 });
 
+themeButton.addEventListener('click', () => {
+  const isDark = document.body.classList.contains('dark');
+  setDarkTheme(!isDark);
+});
+
 cityFilter.addEventListener('change', applyFilters);
 providerFilter.addEventListener('change', applyFilters);
 nearestButton.addEventListener('click', findNearest);
 
 // Load the restaurants when the page is opened
 loadRestaurants();
+// Check if the user is still logged in
 restoreUser();
+// Use the saved theme when the page loads
+if (localStorage.getItem('theme') === 'dark') {
+  setDarkTheme(true);
+}
